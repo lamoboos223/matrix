@@ -52,3 +52,4 @@ trusted_key_servers:
 report_stats: false
 presence:
   enabled: false
+suppress_key_server_warning: true
