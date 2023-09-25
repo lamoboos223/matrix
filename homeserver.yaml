@@ -33,7 +33,7 @@ database:
   args:
     user: synapse_user
     password: synapse_password!123
-    database: matrix_db
+    database: synapse_db1
     host: 192.168.3.5
     port: 5432
     cp_min: 5
