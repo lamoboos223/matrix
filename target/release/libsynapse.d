@@ -1,0 +1,1 @@
+/opt/matrix/target/release/libsynapse.rlib: /opt/matrix/rust/build.rs /opt/matrix/rust/src/lib.rs /opt/matrix/rust/src/push/base_rules.rs /opt/matrix/rust/src/push/evaluator.rs /opt/matrix/rust/src/push/mod.rs /opt/matrix/rust/src/push/utils.rs

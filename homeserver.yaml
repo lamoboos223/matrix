@@ -1,0 +1,47 @@
+server_name: "matrix.lab-lama.com"
+pid_file: /etc/matrix/homeserver.pid
+listeners:
+  - port: 8008
+    tls: false
+    type: http
+    x_forwarded: true
+    bind_addresses: ['::1', '0.0.0.0']
+    resources:
+      - names: [client, federation]
+        compress: false
+        
+# workers-related
+# The HTTP replication port
+  - port: 9093
+    bind_address: '127.0.0.1'
+    type: http
+    resources:
+     - names: [replication]
+
+# modules:
+#   - module: auth.CustomAuthProvider
+#     config: {}
+
+# redis:
+#   enabled: true
+#   host: 127.0.0.1
+#   port: 6379
+  # password: password
+
+database:
+  name: psycopg2
+  args:
+    user: synapse_user
+    password: Delta@98713
+    database: synapse_db
+    host: 127.0.0.1
+    port: 5432
+    cp_min: 5
+    cp_max: 10
+log_config: "./twkl.chat.log.config"
+enable_registration: True
+enable_registration_without_verification: True
+registration_shared_secret: "dlXUqOyb9q7xtxYv9suuIoxodbISp2qX"
+report_stats: false
+presence:
+  enabled: false

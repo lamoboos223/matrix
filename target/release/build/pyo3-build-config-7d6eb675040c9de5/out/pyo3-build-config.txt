@@ -1,0 +1,10 @@
+implementation=CPython
+version=3.7
+shared=false
+abi3=true
+lib_name=python3.10
+lib_dir=/usr/local/lib
+executable=/root/.cache/pypoetry/virtualenvs/matrix-synapse-PRY9A1rL-py3.10/bin/python
+pointer_width=64
+build_flags=
+suppress_build_script_link_lines=false

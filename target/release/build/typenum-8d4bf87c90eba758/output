@@ -1,0 +1,2 @@
+cargo:rustc-env=TYPENUM_BUILD_CONSTS=/opt/matrix/target/release/build/typenum-8d4bf87c90eba758/out/consts.rs
+cargo:rustc-env=TYPENUM_BUILD_OP=/opt/matrix/target/release/build/typenum-8d4bf87c90eba758/out/op.rs

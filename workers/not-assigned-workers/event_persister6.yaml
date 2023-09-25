@@ -1,0 +1,25 @@
+worker_app: synapse.app.generic_worker
+worker_name: ep6
+worker_pid_file: /var/log/matrix/event_persister6.pid
+
+# The replication listener on the main synapse process.
+worker_replication_host: 10.60.3.50
+worker_replication_http_port: 9093
+
+worker_listeners:
+  - type: http
+    host: 127.0.0.1
+    port: 8044
+    resources:
+      - names: [replication]
+
+  # Enable listener if this stream writer handles endpoints for the `typing` or
+  # `to_device` streams. Uses a different port to the `replication` listener to
+  # avoid exposing the `replication` listener publicly.
+  #
+  - type: http
+    port: 8045
+    resources:
+      - names: [client]
+
+worker_log_config: /opt/matrix/workers/config/event-persister-6-log.yaml
