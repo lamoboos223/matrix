@@ -127,14 +127,16 @@ class WorkerConfig(Config):
         self.worker_log_config = worker_log_config
 
         # The host used to connect to the main synapse
-        self.worker_replication_host = config.get("worker_replication_host", None)
+        self.worker_replication_host = config.get(
+            "worker_replication_host", None)
 
         # The port on the main synapse for TCP replication
         if "worker_replication_port" in config:
             raise ConfigError(DIRECT_TCP_ERROR, ("worker_replication_port",))
 
         # The port on the main synapse for HTTP replication endpoint
-        self.worker_replication_http_port = config.get("worker_replication_http_port")
+        self.worker_replication_http_port = config.get(
+            "worker_replication_http_port")
 
         # The tls mode on the main synapse for HTTP replication endpoint.
         # For backward compatibility this defaults to False.
@@ -143,7 +145,8 @@ class WorkerConfig(Config):
         )
 
         # The shared secret used for authentication when connecting to the main synapse.
-        self.worker_replication_secret = config.get("worker_replication_secret", None)
+        self.worker_replication_secret = config.get(
+            "worker_replication_secret", None)
 
         self.worker_name = config.get("worker_name", self.worker_app)
         self.instance_name = self.worker_name or "master"
@@ -188,7 +191,7 @@ class WorkerConfig(Config):
         # Map from type of streams to source, c.f. WriterLocations.
         writers = config.get("stream_writers") or {}
         self.writers = WriterLocations(**writers)
-        self._append_worker_to_writers_and_instance_map(config)
+        # self._append_worker_to_writers_and_instance_map(config)
 
         # Check that the configured writers for events and typing also appears in
         # `instance_map`.
@@ -200,7 +203,8 @@ class WorkerConfig(Config):
             "receipts",
             "presence",
         ):
-            instances = _instance_to_list_converter(getattr(self.writers, stream))
+            instances = _instance_to_list_converter(
+                getattr(self.writers, stream))
             for instance in instances:
                 if instance != "master" and instance not in self.instance_map:
                     raise ConfigError(
@@ -229,7 +233,8 @@ class WorkerConfig(Config):
             )
 
         if len(self.writers.events) == 0:
-            raise ConfigError("Must specify at least one instance to handle `events`.")
+            raise ConfigError(
+                "Must specify at least one instance to handle `events`.")
 
         if len(self.writers.presence) != 1:
             raise ConfigError(
@@ -248,7 +253,8 @@ class WorkerConfig(Config):
             "pusher_instances",
         )
         self.start_pushers = self.instance_name in pusher_instances
-        self.pusher_shard_config = ShardedWorkerHandlingConfig(pusher_instances)
+        self.pusher_shard_config = ShardedWorkerHandlingConfig(
+            pusher_instances)
 
         # Whether this worker should run background tasks or not.
         #
@@ -258,7 +264,8 @@ class WorkerConfig(Config):
         #
         # No effort is made to ensure only a single instance of these tasks is
         # running.
-        background_tasks_instance = config.get("run_background_tasks_on") or "master"
+        background_tasks_instance = config.get(
+            "run_background_tasks_on") or "master"
         self.run_background_tasks = (
             self.worker_name is None and background_tasks_instance == "master"
         ) or self.worker_name == background_tasks_instance
@@ -446,4 +453,5 @@ class WorkerConfig(Config):
 
         for stream in config.get("streams"):
             if self.instance_name not in self.writers.__getattribute__(stream):
-                self.writers.__getattribute__(stream).append(self.instance_name)
+                self.writers.__getattribute__(
+                    stream).append(self.instance_name)

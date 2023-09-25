@@ -57,8 +57,7 @@ from synapse.rest.client import (
     tokenrefresh,
     user_directory,
     versions,
-    voip,
-    broadcast  # TWK
+    voip
 )
 
 if TYPE_CHECKING:
@@ -97,9 +96,6 @@ class ClientRestResource(JsonResource):
         events.register_servlets(hs, client_resource)
 
         room.register_servlets(hs, client_resource)
-
-        # TWK
-        broadcast.register_servlets(hs, client_resource)
 
         login.register_servlets(hs, client_resource)
         profile.register_servlets(hs, client_resource)
@@ -148,7 +144,8 @@ class ClientRestResource(JsonResource):
 
         # moving to /_synapse/admin
         if is_main_process:
-            admin.register_servlets_for_client_rest_resource(hs, client_resource)
+            admin.register_servlets_for_client_rest_resource(
+                hs, client_resource)
 
         # unstable
         if is_main_process:
