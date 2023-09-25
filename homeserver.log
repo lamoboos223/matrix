@@ -1,0 +1,141 @@
+2023-09-25 11:42:05,651 - root - 350 - WARNING - main - ***** STARTING SERVER *****
+2023-09-25 11:42:05,651 - root - 351 - WARNING - main - Server /opt/matrix/synapse/app/homeserver.py version 1.79.0 (b=master,d70604e)
+2023-09-25 11:42:05,651 - root - 356 - INFO - main - Server hostname: matrix.lab-lama.com
+2023-09-25 11:42:05,651 - root - 357 - INFO - main - Instance name: master
+2023-09-25 11:42:05,651 - root - 358 - INFO - main - Twisted reactor: EPollReactor
+2023-09-25 11:42:05,651 - synapse.app.homeserver - 339 - INFO - main - Setting up server
+2023-09-25 11:42:05,652 - synapse.server - 304 - INFO - main - Setting up.
+2023-09-25 11:42:05,652 - synapse.app._base - 207 - ERROR - main - Exception during startup
+Traceback (most recent call last):
+  File "/opt/matrix/synapse/app/homeserver.py", line 342, in setup
+    hs.setup()
+  File "/opt/matrix/synapse/server.py", line 306, in setup
+    self.datastores = Databases(self.DATASTORE_CLASS, self)
+  File "/opt/matrix/synapse/storage/databases/__init__.py", line 65, in __init__
+    with make_conn(database_config, engine, "startup") as db_conn:
+  File "/opt/matrix/synapse/storage/database.py", line 151, in make_conn
+    native_db_conn = engine.module.connect(**db_params)
+  File "/root/.cache/pypoetry/virtualenvs/matrix-synapse-PRY9A1rL-py3.10/lib/python3.10/site-packages/psycopg2/__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+psycopg2.OperationalError: could not connect to server: Connection refused
+	Is the server running on host "127.0.0.1" and accepting
+	TCP/IP connections on port 5432?
+
+2023-09-25 11:44:36,292 - root - 350 - WARNING - main - ***** STARTING SERVER *****
+2023-09-25 11:44:36,292 - root - 351 - WARNING - main - Server /opt/matrix/synapse/app/homeserver.py version 1.79.0 (b=master,d70604e)
+2023-09-25 11:44:36,292 - root - 356 - INFO - main - Server hostname: matrix.lab-lama.com
+2023-09-25 11:44:36,292 - root - 357 - INFO - main - Instance name: master
+2023-09-25 11:44:36,293 - root - 358 - INFO - main - Twisted reactor: EPollReactor
+2023-09-25 11:44:36,293 - synapse.app.homeserver - 339 - INFO - main - Setting up server
+2023-09-25 11:44:36,293 - synapse.server - 304 - INFO - main - Setting up.
+2023-09-25 11:44:36,299 - synapse.storage.databases - 66 - INFO - main - [database config 'master']: Checking database server
+2023-09-25 11:44:36,300 - synapse.storage.databases - 69 - INFO - main - [database config 'master']: Preparing for databases ['main', 'state']
+2023-09-25 11:44:36,300 - synapse.storage.prepare_database - 120 - INFO - main - ['main', 'state']: Checking existing schema version
+2023-09-25 11:44:36,301 - synapse.storage.prepare_database - 150 - INFO - main - ['main', 'state']: Initialising new database
+2023-09-25 11:44:36,352 - synapse.storage.prepare_database - 416 - INFO - main - Applying schema deltas for v73
+2023-09-25 11:44:36,353 - synapse.storage.prepare_database - 524 - INFO - main - Applying schema 73/01event_failed_pull_attempts.sql
+2023-09-25 11:44:36,356 - synapse.storage.prepare_database - 524 - INFO - main - Applying schema 73/02add_pusher_enabled.sql
+2023-09-25 11:44:36,360 - synapse.storage.prepare_database - 524 - INFO - main - Applying schema 73/02room_id_indexes_for_purging.sql
+2023-09-25 11:44:36,363 - synapse.storage.prepare_database - 524 - INFO - main - Applying schema 73/03pusher_device_id.sql
+2023-09-25 11:44:36,368 - synapse.storage.prepare_database - 524 - INFO - main - Applying schema 73/03users_approved_column.sql
+2023-09-25 11:44:36,372 - synapse.storage.prepare_database - 524 - INFO - main - Applying schema 73/04partial_join_details.sql
+2023-09-25 11:44:36,378 - synapse.storage.prepare_database - 524 - INFO - main - Applying schema 73/04pending_device_list_updates.sql
+2023-09-25 11:44:36,380 - synapse.storage.prepare_database - 532 - INFO - main - Applying engine-specific schema 73/05old_push_actions.sql.sqlite
+2023-09-25 11:44:36,385 - synapse.storage.prepare_database - 524 - INFO - main - Applying schema 73/06thread_notifications_thread_id_idx.sql
+2023-09-25 11:44:36,387 - synapse.storage.prepare_database - 532 - INFO - main - Applying engine-specific schema 73/08thread_receipts_non_null.sql.sqlite
+2023-09-25 11:44:36,410 - synapse.storage.prepare_database - 524 - INFO - main - Applying schema 73/09partial_joined_via_destination.sql
+2023-09-25 11:44:36,416 - synapse.storage.prepare_database - 524 - INFO - main - Applying schema 73/09threads_table.sql
+2023-09-25 11:44:36,419 - synapse.storage.prepare_database - 507 - INFO - main - Running 73/10_update_sqlite_fts4_tokenizer.py:run_create
+2023-09-25 11:44:36,422 - synapse.storage.prepare_database - 524 - INFO - main - Applying schema 73/10login_tokens.sql
+2023-09-25 11:44:36,425 - synapse.storage.prepare_database - 524 - INFO - main - Applying schema 73/12refactor_device_list_outbound_pokes.sql
+2023-09-25 11:44:36,427 - synapse.storage.prepare_database - 524 - INFO - main - Applying schema 73/13add_device_lists_index.sql
+2023-09-25 11:44:36,429 - synapse.storage.prepare_database - 524 - INFO - main - Applying schema 73/20_un_partial_stated_room_stream.sql
+2023-09-25 11:44:36,431 - synapse.storage.prepare_database - 524 - INFO - main - Applying schema 73/22_rebuild_user_dir_stats.sql
+2023-09-25 11:44:36,433 - synapse.storage.prepare_database - 524 - INFO - main - Applying schema 73/22_un_partial_stated_event_stream.sql
+2023-09-25 11:44:36,435 - synapse.storage.prepare_database - 524 - INFO - main - Applying schema 73/23_fix_thread_index.sql
+2023-09-25 11:44:36,437 - synapse.storage.prepare_database - 524 - INFO - main - Applying schema 73/24_events_jump_to_date_index.sql
+2023-09-25 11:44:36,439 - synapse.storage.prepare_database - 524 - INFO - main - Applying schema 73/25drop_presence.sql
+2023-09-25 11:44:36,441 - synapse.storage.prepare_database - 416 - INFO - main - Applying schema deltas for v74
+2023-09-25 11:44:36,442 - synapse.storage.prepare_database - 551 - INFO - main - Schema now up to date
+2023-09-25 11:44:36,444 - synapse.storage.databases - 84 - INFO - main - [database config 'master']: Starting 'main' database
+2023-09-25 11:44:36,444 - synapse.storage.util.id_generators - 92 - INFO - main - Initialising stream generator for receipts_linearized(stream_id): 1
+2023-09-25 11:44:36,445 - synapse.storage.util.id_generators - 92 - INFO - main - Initialising stream generator for events(stream_ordering): 1
+2023-09-25 11:44:36,445 - synapse.storage.util.id_generators - 92 - INFO - main - Initialising stream generator for events(stream_ordering): -1
+2023-09-25 11:44:36,445 - synapse.storage.util.id_generators - 92 - INFO - main - Initialising stream generator for ex_outlier_stream(event_stream_ordering): -1
+2023-09-25 11:44:36,447 - synapse.storage.util.id_generators - 92 - INFO - main - Initialising stream generator for un_partial_stated_event_stream(stream_id): 1
+2023-09-25 11:44:36,448 - synapse.storage.util.id_generators - 92 - INFO - main - Initialising stream generator for device_inbox(stream_id): 1
+2023-09-25 11:44:36,450 - synapse.storage.util.id_generators - 92 - INFO - main - Initialising stream generator for pushers(id): 1
+2023-09-25 11:44:36,450 - synapse.storage.util.id_generators - 92 - INFO - main - Initialising stream generator for deleted_pushers(stream_id): 1
+2023-09-25 11:44:36,450 - synapse.storage.util.id_generators - 92 - INFO - main - Initialising stream generator for push_rules_stream(stream_id): 1
+2023-09-25 11:44:36,451 - synapse.storage.util.id_generators - 92 - INFO - main - Initialising stream generator for room_account_data(stream_id): 1
+2023-09-25 11:44:36,451 - synapse.storage.util.id_generators - 92 - INFO - main - Initialising stream generator for room_tags_revisions(stream_id): 1
+2023-09-25 11:44:36,451 - synapse.storage.util.id_generators - 92 - INFO - main - Initialising stream generator for e2e_cross_signing_keys(stream_id): 1
+2023-09-25 11:44:36,451 - synapse.storage.databases.main.event_push_actions - 1298 - INFO - main - Searching for stream ordering 1 month ago
+2023-09-25 11:44:36,451 - synapse.storage.databases.main.event_push_actions - 1302 - INFO - main - Found stream ordering 1 month ago: it's 0
+2023-09-25 11:44:36,452 - synapse.storage.databases.main.event_push_actions - 1305 - INFO - main - Searching for stream ordering 1 day ago
+2023-09-25 11:44:36,452 - synapse.storage.databases.main.event_push_actions - 1309 - INFO - main - Found stream ordering 1 day ago: it's 0
+2023-09-25 11:44:36,452 - synapse.storage.util.id_generators - 92 - INFO - main - Initialising stream generator for push_rules(id): 1
+2023-09-25 11:44:36,452 - synapse.storage.util.id_generators - 92 - INFO - main - Initialising stream generator for push_rules_enable(id): 1
+2023-09-25 11:44:36,453 - synapse.storage.util.id_generators - 92 - INFO - main - Initialising stream generator for presence_stream(stream_id): 1
+2023-09-25 11:44:36,453 - synapse.storage.util.id_generators - 92 - INFO - main - Initialising stream generator for access_tokens(id): 1
+2023-09-25 11:44:36,454 - synapse.storage.util.id_generators - 92 - INFO - main - Initialising stream generator for refresh_tokens(id): 1
+2023-09-25 11:44:36,454 - synapse.storage.util.id_generators - 92 - INFO - main - Initialising stream generator for un_partial_stated_room_stream(stream_id): 1
+2023-09-25 11:44:36,454 - synapse.storage.util.id_generators - 92 - INFO - main - Initialising stream generator for event_reports(id): 1
+2023-09-25 11:44:36,454 - synapse.storage.util.id_generators - 92 - INFO - main - Initialising stream generator for device_lists_stream(stream_id): 1
+2023-09-25 11:44:36,454 - synapse.storage.util.id_generators - 92 - INFO - main - Initialising stream generator for user_signature_stream(stream_id): 1
+2023-09-25 11:44:36,455 - synapse.storage.util.id_generators - 92 - INFO - main - Initialising stream generator for device_lists_outbound_pokes(stream_id): 1
+2023-09-25 11:44:36,455 - synapse.storage.util.id_generators - 92 - INFO - main - Initialising stream generator for device_lists_changes_in_room(stream_id): 1
+2023-09-25 11:44:36,455 - synapse.storage.util.id_generators - 92 - INFO - main - Initialising stream generator for device_lists_remote_pending(stream_id): 1
+2023-09-25 11:44:36,455 - synapse.storage.util.id_generators - 92 - INFO - main - Initialising stream generator for device_lists_changes_converted_stream_position(stream_id): 1
+2023-09-25 11:44:36,456 - synapse.storage.databases - 101 - INFO - main - [database config 'master']: Starting 'state' database
+2023-09-25 11:44:36,457 - synapse.storage.databases - 116 - INFO - main - [database config 'master']: prepared
+2023-09-25 11:44:36,476 - synapse.server - 307 - INFO - main - Finished setting up.
+2023-09-25 11:44:36,569 - synapse.push.pusher - 38 - INFO - main - email enable notifs: False
+2023-09-25 11:44:36,571 - synapse.federation.federation_server - 1430 - INFO - main - Registering federation EDU handler for 'm.device_list_update'
+2023-09-25 11:44:36,571 - synapse.federation.federation_server - 1450 - INFO - main - Registering federation query handler for 'profile'
+2023-09-25 11:44:36,573 - synapse.federation.federation_server - 1430 - INFO - main - Registering federation EDU handler for 'm.presence'
+2023-09-25 11:44:36,573 - synapse.federation.federation_server - 1430 - INFO - main - Registering federation EDU handler for 'm.typing'
+2023-09-25 11:44:36,574 - synapse.federation.federation_server - 1450 - INFO - main - Registering federation query handler for 'directory'
+2023-09-25 11:44:36,575 - twisted - 277 - INFO - main - Redirected stdout/stderr to logs
+2023-09-25 11:44:36,575 - synapse.app.homeserver - 167 - INFO - sentinel - Running
+2023-09-25 11:44:36,580 - synapse.app.homeserver - 29 - INFO - sentinel - Set file limit to: 4096
+2023-09-25 11:44:36,581 - synapse.handlers.deactivate_account - 231 - INFO - user_parter_loop-0 - Starting user parter
+2023-09-25 11:44:36,584 - synapse.util.caches.lrucache - 225 - INFO - sentinel - Expiring LRU caches after 1800 seconds
+2023-09-25 11:44:36,601 - synapse.federation.federation_server - 1430 - INFO - sentinel - Registering federation EDU handler for 'm.receipt'
+2023-09-25 11:44:36,601 - synapse.federation.federation_server - 1430 - INFO - sentinel - Registering federation EDU handler for 'm.signing_key_update'
+2023-09-25 11:44:36,601 - synapse.federation.federation_server - 1430 - INFO - sentinel - Registering federation EDU handler for 'org.matrix.signing_key_update'
+2023-09-25 11:44:36,601 - synapse.federation.federation_server - 1450 - INFO - sentinel - Registering federation query handler for 'client_keys'
+2023-09-25 11:44:36,602 - synapse.federation.federation_server - 1430 - INFO - sentinel - Registering federation EDU handler for 'm.direct_to_device'
+2023-09-25 11:44:36,612 - synapse.util.httpresourcetree - 49 - INFO - sentinel - Attaching <synapse.rest.health.HealthResource object at 0x7f416f3eae00> to path b'/health'
+2023-09-25 11:44:36,612 - synapse.util.httpresourcetree - 49 - INFO - sentinel - Attaching <synapse.rest.ClientRestResource object at 0x7f416f3eaec0> to path b'/_matrix/client'
+2023-09-25 11:44:36,612 - synapse.util.httpresourcetree - 49 - INFO - sentinel - Attaching <twisted.web.resource.Resource object at 0x7f416f4399f0> to path b'/.well-known'
+2023-09-25 11:44:36,613 - synapse.util.httpresourcetree - 49 - INFO - sentinel - Attaching <synapse.rest.admin.AdminRestResource object at 0x7f416f439c00> to path b'/_synapse/admin'
+2023-09-25 11:44:36,613 - synapse.util.httpresourcetree - 49 - INFO - sentinel - Attaching <synapse.rest.synapse.client.pick_idp.PickIdpResource object at 0x7f416c25c280> to path b'/_synapse/client/pick_idp'
+2023-09-25 11:44:36,613 - synapse.util.httpresourcetree - 49 - INFO - sentinel - Attaching <twisted.web.resource.Resource object at 0x7f416c25c430> to path b'/_synapse/client/pick_username'
+2023-09-25 11:44:36,613 - synapse.util.httpresourcetree - 49 - INFO - sentinel - Attaching <synapse.rest.synapse.client.new_user_consent.NewUserConsentResource object at 0x7f416c25c730> to path b'/_synapse/client/new_user_consent'
+2023-09-25 11:44:36,613 - synapse.util.httpresourcetree - 49 - INFO - sentinel - Attaching <synapse.rest.synapse.client.sso_register.SsoRegisterResource object at 0x7f416c25c760> to path b'/_synapse/client/sso_register'
+2023-09-25 11:44:36,613 - synapse.util.httpresourcetree - 49 - INFO - sentinel - Attaching <synapse.rest.synapse.client.unsubscribe.UnsubscribeResource object at 0x7f416c25c9d0> to path b'/_synapse/client/unsubscribe'
+2023-09-25 11:44:36,613 - synapse.util.httpresourcetree - 49 - INFO - sentinel - Attaching FilePath('/opt/matrix/synapse/static') to path b'/_matrix/static'
+2023-09-25 11:44:36,613 - synapse.util.httpresourcetree - 49 - INFO - sentinel - Attaching <synapse.rest.media.media_repository_resource.MediaRepositoryResource object at 0x7f416c25ca00> to path b'/_matrix/media/r0'
+2023-09-25 11:44:36,613 - synapse.util.httpresourcetree - 49 - INFO - sentinel - Attaching <synapse.rest.media.media_repository_resource.MediaRepositoryResource object at 0x7f416c25ca00> to path b'/_matrix/media/v3'
+2023-09-25 11:44:36,613 - synapse.util.httpresourcetree - 49 - INFO - sentinel - Attaching <synapse.rest.media.media_repository_resource.MediaRepositoryResource object at 0x7f416c25ca00> to path b'/_matrix/media/v1'
+2023-09-25 11:44:36,614 - synapse.util.httpresourcetree - 49 - INFO - sentinel - Attaching <synapse.federation.transport.server.TransportLayerServer object at 0x7f416c25cbb0> to path b'/_matrix/federation'
+2023-09-25 11:44:36,614 - synapse.util.httpresourcetree - 49 - INFO - sentinel - Attaching <synapse.rest.key.v2.KeyResource object at 0x7f416c25cc40> to path b'/_matrix/key'
+2023-09-25 11:44:36,615 - twisted - 277 - INFO - sentinel - SynapseSite starting on 8008
+2023-09-25 11:44:36,615 - twisted - 277 - INFO - sentinel - SynapseSite starting on 8008
+2023-09-25 11:44:36,615 - synapse.app._base - 399 - INFO - sentinel - Synapse now listening on TCP port 8008
+2023-09-25 11:44:36,698 - synapse.storage.background_updates - 288 - INFO - background_updates-0 - Starting background schema updates for database master
+2023-09-25 11:44:36,699 - synapse.handlers.deactivate_account - 241 - INFO - user_parter_loop-0 - User parter finished: stopping
+2023-09-25 11:44:36,700 - synapse.push.pusherpool - 347 - INFO - start_pushers-0 - Started pushers
+2023-09-25 11:44:37,704 - synapse.storage.background_updates - 431 - INFO - background_updates-0 - Starting update batch on background update 'event_push_actions_thread_id_null'
+2023-09-25 11:44:37,705 - synapse.storage.background_updates - 666 - INFO - background_updates-0 - Adding index event_push_actions_thread_id_null to event_push_actions
+2023-09-25 11:44:37,713 - synapse.storage.background_updates - 474 - INFO - background_updates-0 - Running background update 'event_push_actions_thread_id_null'. Processed 1 items in 8ms. (total_rate=0.125/ms, current_rate=0.125/ms, total_updated=1, batch_size=100)
+2023-09-25 11:44:38,715 - synapse.storage.background_updates - 431 - INFO - background_updates-0 - Starting update batch on background update 'event_push_summary_thread_id_null'
+2023-09-25 11:44:38,716 - synapse.storage.background_updates - 666 - INFO - background_updates-0 - Adding index event_push_summary_thread_id_null to event_push_summary
+2023-09-25 11:44:38,722 - synapse.storage.background_updates - 474 - INFO - background_updates-0 - Running background update 'event_push_summary_thread_id_null'. Processed 1 items in 6ms. (total_rate=0.16666666666666666/ms, current_rate=0.16666666666666666/ms, total_updated=1, batch_size=100)
+2023-09-25 11:44:39,723 - synapse.storage.background_updates - 431 - INFO - background_updates-0 - Starting update batch on background update 'receipts_graph_unique_index'
+2023-09-25 11:44:39,725 - synapse.storage.background_updates - 666 - INFO - background_updates-0 - Adding index receipts_graph_unique_index to receipts_graph
+2023-09-25 11:44:39,731 - synapse.storage.background_updates - 474 - INFO - background_updates-0 - Running background update 'receipts_graph_unique_index'. Processed 1 items in 7ms. (total_rate=0.14285714285714285/ms, current_rate=0.14285714285714285/ms, total_updated=1, batch_size=100)
+2023-09-25 11:44:40,733 - synapse.storage.background_updates - 431 - INFO - background_updates-0 - Starting update batch on background update 'receipts_linearized_unique_index'
+2023-09-25 11:44:40,734 - synapse.storage.background_updates - 666 - INFO - background_updates-0 - Adding index receipts_linearized_unique_index to receipts_linearized
+2023-09-25 11:44:40,741 - synapse.storage.background_updates - 474 - INFO - background_updates-0 - Running background update 'receipts_linearized_unique_index'. Processed 1 items in 8ms. (total_rate=0.125/ms, current_rate=0.125/ms, total_updated=1, batch_size=100)
