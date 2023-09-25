@@ -31,10 +31,10 @@ listeners:
 database:
   name: psycopg2
   args:
-    user: synapse_new
-    password: Delta@98713
+    user: synapse_user
+    password: synapse_password!123
     database: synapse_db
-    host: 192.168.3.6
+    host: 192.168.3.8
     port: 5432
     cp_min: 5
     cp_max: 10
