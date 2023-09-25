@@ -1,16 +1,5 @@
-# Configuration file for Synapse.
-#
-# This is a YAML file: see [1] for a quick introduction. Note in particular
-# that *indentation is important*: all the elements of a list or dictionary
-# should have the same indentation.
-#
-# [1] https://docs.ansible.com/ansible/latest/reference_appendices/YAMLSyntax.html
-#
-# For more information on how to configure Synapse, including a complete accounting of
-# each option, go to docs/usage/configuration/config_documentation.md or
-# https://matrix-org.github.io/synapse/latest/usage/configuration/config_documentation.html
 server_name: "matrix.lab-lama.com"
-pid_file: /opt/matrix/homeserver.pid
+pid_file: /etc/matrix/homeserver.pid
 listeners:
   - port: 8008
     tls: false
@@ -20,12 +9,38 @@ listeners:
     resources:
       - names: [client, federation]
         compress: false
+        
+# workers-related
+# The HTTP replication port
+  - port: 9093
+    bind_address: '127.0.0.1'
+    type: http
+    resources:
+     - names: [replication]
+
+# modules:
+#   - module: auth.CustomAuthProvider
+#     config: {}
+
+# redis:
+#   enabled: true
+#   host: 127.0.0.1
+#   port: 6379
+  # password: password
+
 database:
-  name: sqlite3
+  name: psycopg2
   args:
-    database: /opt/matrix/homeserver.db
-log_config: "/opt/matrix/matrix.lab-lama.com.log.config"
-media_store_path: /opt/matrix/media_store
+    user: synapse_new
+    password: Delta@98713
+    database: synapse_db
+    host: 192.168.3.6
+    port: 5432
+    cp_min: 5
+    cp_max: 10
+log_config: "./twkl.chat.log.config"
+enable_registration: True
+enable_registration_without_verification: True
 registration_shared_secret: "o7&0#7ngAZvkoMu#twL-Z;57795k1TZRKlw~iqIUma*vE:u#,5"
 report_stats: false
 macaroon_secret_key: "H3hkeID86^w~aI_JW.+jm0n&2UO3nCYWcdh149FamAxB*GWp0j"
@@ -34,5 +49,6 @@ signing_key_path: "/opt/matrix/matrix.lab-lama.com.signing.key"
 trusted_key_servers:
   - server_name: "matrix.org"
 
-
-# vim:ft=yaml
+report_stats: false
+presence:
+  enabled: false
