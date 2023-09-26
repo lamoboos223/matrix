@@ -869,10 +869,9 @@ class RoomCreationHandler:
         visibility = config.get("visibility", "private")
         is_public = visibility == "public"
 
-        # TWK
+
         room_id = await self._generate_and_create_room_id(
             creator_id=user_id,
-            invite=invite_list[0],
             is_public=is_public,
             room_version=room_version,
         )
@@ -1308,7 +1307,7 @@ class RoomCreationHandler:
         assert last_event.internal_metadata.stream_ordering is not None
         return last_event.internal_metadata.stream_ordering, last_event.event_id, depth
 
-    def _generate_room_id(self, creator_id: str, invite: str) -> str:
+    def _generate_room_id(self) -> str:
         """Generates a random room ID.
 
         Room IDs look like "!opaque_id:domain" and are case-sensitive as per the spec
@@ -1324,39 +1323,31 @@ class RoomCreationHandler:
         Returns:
             A random room ID of the form "!opaque_id:domain".
         """
-        # TWK
-        pattern = '@(.*):' + self.hs.hostname
-        creator_name = re.search(pattern, creator_id).group(1)
-        invite_name = re.search(pattern, invite).group(1)
-
-        return RoomID(creator_name + '_' + invite_name, self.hs.hostname).to_string()
+        random_string = stringutils.random_string(18)
+        return RoomID(random_string, self.hs.hostname).to_string()
 
     async def _generate_and_create_room_id(
         self,
         creator_id: str,
-        invite: str,
         is_public: bool,
         room_version: RoomVersion,
     ) -> str:
-
-        try:
-
-            # TWK
-            gen_room_id = self._generate_room_id(creator_id=creator_id,
-                                                 invite=invite)
-
-            # store_room method stores the room into db
-            await self.store.store_room(
-                room_id=gen_room_id,
-                room_creator_user_id=creator_id,
-                is_public=is_public,
-                room_version=room_version,
-            )
-            return gen_room_id
-
-        except StoreError:
-            raise StoreError(500, "Couldn't generate a room ID.")
-
+        # autogen room IDs and try to create it. We may clash, so just
+        # try a few times till one goes through, giving up eventually.
+        attempts = 0
+        while attempts < 5:
+            try:
+                gen_room_id = self._generate_room_id()
+                await self.store.store_room(
+                    room_id=gen_room_id,
+                    room_creator_user_id=creator_id,
+                    is_public=is_public,
+                    room_version=room_version,
+                )
+                return gen_room_id
+            except StoreError:
+                attempts += 1
+        raise StoreError(500, "Couldn't generate a room ID.")
 
 class RoomContextHandler:
     def __init__(self, hs: "HomeServer"):

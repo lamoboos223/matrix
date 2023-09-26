@@ -22,10 +22,10 @@ listeners:
 #   - module: auth.CustomAuthProvider
 #     config: {}
 
-# redis:
-#   enabled: true
-#   host: 127.0.0.1
-#   port: 6379
+redis:
+  enabled: true
+  host: 192.168.3.16
+  port: 6379
   # password: password
 
 database:
@@ -38,7 +38,7 @@ database:
     port: 5432
     cp_min: 5
     cp_max: 10
-log_config: "./matrix.log.config"
+log_config: "./matrix.lab-lama.com.log.config"
 enable_registration: True
 enable_registration_without_verification: True
 registration_shared_secret: "o7&0#7ngAZvkoMu#twL-Z;57795k1TZRKlw~iqIUma*vE:u#,5"
