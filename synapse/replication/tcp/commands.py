@@ -374,6 +374,29 @@ class BroadcastCommand(Command):
     def redis_channel_name(self, prefix: str) -> str:
         return f"{prefix}/BROADCAST"
 
+# Lama
+class ScheduledMessageCommand(Command):
+    NAME = "ScheduledMessage"
+
+    def __init__(self, request_id: str, message: str, room_id: str, timestamp: str):
+        self.request_id = request_id
+        self.message = message
+        self.room_id = room_id
+        self.timestamp = timestamp
+
+    @classmethod
+    def from_line(
+        cls: Type["ScheduledMessageCommand"], line: str
+    ) -> "ScheduledMessageCommand":
+        request_id, message, room_id, timestamp = line.split(" ")
+        return cls(request_id, message, room_id, timestamp)
+
+    def to_line(self) -> str:
+        return "%s %s %s %s" % (self.request_id, self.message, self.room_id,
+                                self.timestamp)
+
+    def redis_channel_name(self, prefix: str) -> str:
+        return f"{prefix}/ScheduledMessage"
 
 class UserIpCommand(Command):
     """Sent periodically when a worker sees activity from a client.
@@ -462,6 +485,7 @@ _COMMANDS: Tuple[Type[Command], ...] = (
     RemoteServerUpCommand,
     ClearUserSyncsCommand,
     BroadcastCommand,  # TWK
+    ScheduledMessageCommand  # Lama
 )
 
 # Map of command name to command type.
@@ -475,7 +499,8 @@ VALID_SERVER_COMMANDS = (
     ErrorCommand.NAME,
     PingCommand.NAME,
     RemoteServerUpCommand.NAME,
-    BroadcastCommand  # TWK
+    BroadcastCommand,  # TWK
+    ScheduledMessageCommand # Lama
 )
 
 # The commands the client is allowed to send
@@ -489,7 +514,8 @@ VALID_CLIENT_COMMANDS = (
     UserIpCommand.NAME,
     ErrorCommand.NAME,
     RemoteServerUpCommand.NAME,
-    BroadcastCommand  # TWK
+    BroadcastCommand,  # TWK
+    ScheduledMessageCommand # Lama
 )
 
 

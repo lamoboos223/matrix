@@ -76,7 +76,7 @@ from .user_erasure_store import UserErasureStore
 
 # TWK
 from .broadcast_request import BroadcastRequestStore
-
+from .scheduled_message import ScheduledMessageStore
 if TYPE_CHECKING:
     from synapse.server import HomeServer
 
@@ -130,6 +130,7 @@ class DataStore(
     LockStore,
     SessionStore,
     BroadcastRequestStore,  # TWK
+    ScheduledMessageStore # Lama
 ):
     def __init__(
         self,

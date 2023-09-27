@@ -18,9 +18,11 @@ listeners:
     resources:
      - names: [replication]
 
-# modules:
-#   - module: auth.CustomAuthProvider
-#     config: {}
+modules:
+  - module: modules.hello-world.main.HelloWorld
+    config: 
+      name: "Lama"
+  - module: modules.scheduled-message.main.ScheduledMessage
 
 redis:
   enabled: true
@@ -34,7 +36,7 @@ database:
     user: synapse_user
     password: synapse_password!123
     database: synapse_db1
-    host: 192.168.3.5
+    host: 192.168.3.6
     port: 5432
     cp_min: 5
     cp_max: 10

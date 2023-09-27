@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import logging
+from datetime import datetime
+import time
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -45,7 +47,9 @@ from synapse.replication.tcp.commands import (
     ReplicateCommand,
     UserIpCommand,
     UserSyncCommand,
-    BroadcastCommand  # TWK
+    BroadcastCommand,  # TWK
+    #synapse/replication/tcp/commands.py
+    ScheduledMessageCommand # Lama
 )
 from synapse.replication.tcp.protocol import IReplicationConnection
 from synapse.replication.tcp.streams import (
@@ -252,6 +256,8 @@ class ReplicationCommandHandler:
             self.subscribe_to_channel("USER_IP")
 
         self.subscribe_to_channel("BROADCAST")  # TWK
+        
+        self.subscribe_to_channel("ScheduledMessage")  # Lama
 
     def subscribe_to_channel(self, channel_name: str) -> None:
         """
@@ -449,6 +455,15 @@ class ReplicationCommandHandler:
             return
 
         return self._handle_broadcast(cmd)
+    
+    # Lama
+    def on_ScheduledMessage(
+        self, conn: IReplicationConnection, cmd: ScheduledMessageCommand
+    ) -> Optional[Awaitable[None]]:
+        # if self._is_master:
+        #     return
+
+        return self._handle_scheduled_message(cmd)
 
     async def emit_message(self, sender, event_dict, request_id):
         is_succeeded = True
@@ -537,6 +552,107 @@ class ReplicationCommandHandler:
 
             retry_count = retry_count - 1
             await self._handle_broadcast(cmd, retry_count)
+            
+    async def _handle_scheduled_message(self, cmd: ScheduledMessageCommand, is_message_sent=False) -> None:
+        if is_message_sent == True:
+            return
+
+        request_data = await self._store.get_scheduled_message_request(cmd.request_id)
+        message = request_data["message"]
+        room_id = request_data["room_id"]
+        timestamp = request_data["timestamp"]
+        timestamp = int(timestamp)
+        # Convert timestamp to datetime object
+        dt = datetime.fromtimestamp(timestamp)
+        logger.warning(f"timestamp= {timestamp} \t dt={dt}")
+        # Extract year, month, day, hour, and minute
+        year = dt.year
+        month = dt.month
+        day = dt.day
+        hour = dt.hour
+        minute = dt.minute
+        scheduled_datetime = datetime(year, month, day, hour, minute)
+        
+        # Get the current datetime
+        dt = datetime.fromtimestamp(self._clock.time_msec()/1000)
+        # Extract year, month, day, hour, and minute
+        year = dt.year
+        month = dt.month
+        day = dt.day
+        hour = dt.hour
+        minute = dt.minute
+        current_datetime = datetime(year, month, day, hour, minute)
+        
+        # Compare the scheduled datetime with the current datetime
+        if scheduled_datetime == current_datetime:
+            # TODO: send message
+            logger.info("Sending scheduled message to room: ", room_id)
+            event_dict: JsonDict = {
+            "type": "m.room.message",
+            "content": message,
+            "room_id": room_id,
+            "sender": "@admin:matrix.lab-lama.com"
+            }
+            sender = create_requester(user_id="@admin:matrix.lab-lama.com")
+            is_message_sent = await self.emit_message(sender, event_dict, cmd.request_id)
+        elif scheduled_datetime > current_datetime:
+            # Calculate the time difference in seconds
+            time_difference = (scheduled_datetime - current_datetime).total_seconds()
+
+            # Sleep for the remaining time
+            # time.sleep(time_difference)
+            is_message_sent = False
+        else:
+            is_message_sent = True
+            logger.warning("The scheduled datetime has already passed.")
+            logger.warning(f" scheduled_datetime= {scheduled_datetime} \t current_datetime= {current_datetime}")
+        
+        # message_content = {
+        #     "msgtype": "m.text",
+        #     "body": request_data["message"]
+        # }
+        # event_dict: JsonDict = {
+        #     "type": "m.room.message",
+        #     "content": message_content,
+        #     "sender": request_data["broadcaster_id"]
+        # }
+        # sender = create_requester(user_id=request_data["broadcaster_id"],
+        #                           access_token_id=cmd.access_token_id)
+
+        # logger.debug(
+        #     "start broadcasting, page= %s, number of rooms= %s",
+        #     cmd.page,
+        #     len(room_ids)
+        # )
+
+        # all_succeeded = True
+        # for room_id in room_ids:
+
+        #     event_dict["room_id"] = room_id
+        #     is_succeeded = await self.emit_message(sender, event_dict, cmd.request_id)
+
+        #     if is_succeeded:
+        #         await self._store. \
+        #             delete_broadcast_request_message_delivery_for_room(cmd.request_id,
+        #                                                                room_id)
+        #     all_succeeded = all_succeeded and is_succeeded
+
+        # if not all_succeeded:
+        #     # retry logic
+
+        #     logger.debug(
+        #         "retry logic (%s): %s, %s, %s",
+        #         retry_count,
+        #         cmd.request_id,
+        #         cmd.page,
+        #         cmd.topic_ids
+        #     )
+
+        #     delay = 10  # sleep for 10 seconds
+        #     await asyncio.sleep(delay)
+
+        #     retry_count = retry_count - 1
+            await self._handle_scheduled_message(cmd, is_message_sent)
 
     async def _handle_user_ip(self, cmd: UserIpCommand) -> None:
         """
@@ -863,6 +979,9 @@ class ReplicationCommandHandler:
                        access_token_id: int):
         self.send_command(BroadcastCommand(request_id, page, topic_ids,
                                            access_token_id))
+    # Lama
+    def send_scheduled_message(self, request_id: str, message: str, room_id: str, timestamp: str):
+        self.send_command(ScheduledMessageCommand(request_id, message, room_id, timestamp))
 
 
 UpdateToken = TypeVar("UpdateToken")
