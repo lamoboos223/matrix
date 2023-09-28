@@ -48,8 +48,8 @@ from synapse.replication.tcp.commands import (
     UserIpCommand,
     UserSyncCommand,
     BroadcastCommand,  # TWK
-    #synapse/replication/tcp/commands.py
-    ScheduledMessageCommand # Lama
+    # synapse/replication/tcp/commands.py
+    ScheduledMessageCommand  # Lama
 )
 from synapse.replication.tcp.protocol import IReplicationConnection
 from synapse.replication.tcp.streams import (
@@ -80,10 +80,13 @@ inbound_rdata_count = Counter(
     "synapse_replication_tcp_protocol_inbound_rdata_count", "", ["stream_name"]
 )
 user_sync_counter = Counter("synapse_replication_tcp_resource_user_sync", "")
-federation_ack_counter = Counter("synapse_replication_tcp_resource_federation_ack", "")
-remove_pusher_counter = Counter("synapse_replication_tcp_resource_remove_pusher", "")
+federation_ack_counter = Counter(
+    "synapse_replication_tcp_resource_federation_ack", "")
+remove_pusher_counter = Counter(
+    "synapse_replication_tcp_resource_remove_pusher", "")
 
-user_ip_cache_counter = Counter("synapse_replication_tcp_resource_user_ip_cache", "")
+user_ip_cache_counter = Counter(
+    "synapse_replication_tcp_resource_user_ip_cache", "")
 
 # the type of the entries in _command_queues_by_stream
 _StreamCommandQueue = Deque[
@@ -222,7 +225,8 @@ class ReplicationCommandHandler:
 
         # For each connection, the incoming stream names that have received a POSITION
         # from that connection.
-        self._streams_by_connection: Dict[IReplicationConnection, Set[str]] = {}
+        self._streams_by_connection: Dict[IReplicationConnection, Set[str]] = {
+        }
 
         LaterGauge(
             "synapse_replication_tcp_command_queue",
@@ -256,7 +260,7 @@ class ReplicationCommandHandler:
             self.subscribe_to_channel("USER_IP")
 
         self.subscribe_to_channel("BROADCAST")  # TWK
-        
+
         self.subscribe_to_channel("ScheduledMessage")  # Lama
 
     def subscribe_to_channel(self, channel_name: str) -> None:
@@ -292,7 +296,8 @@ class ReplicationCommandHandler:
         stream_name = cmd.stream_name
         queue = self._command_queues_by_stream.get(stream_name)
         if queue is None:
-            logger.error("Got %s for unknown stream: %s", cmd.NAME, stream_name)
+            logger.error("Got %s for unknown stream: %s",
+                         cmd.NAME, stream_name)
             return
 
         queue.append((cmd, conn))
@@ -338,7 +343,8 @@ class ReplicationCommandHandler:
             await self._process_rdata(stream_name, conn, cmd)
         else:
             # This shouldn't be possible
-            raise Exception("Unrecognised command %s in stream queue", cmd.NAME)
+            raise Exception(
+                "Unrecognised command %s in stream queue", cmd.NAME)
 
     def start_replication(self, hs: "HomeServer") -> None:
         """Helper method to start replication."""
@@ -427,7 +433,8 @@ class ReplicationCommandHandler:
         federation_ack_counter.inc()
 
         if self._federation_sender:
-            self._federation_sender.federation_ack(cmd.instance_name, cmd.token)
+            self._federation_sender.federation_ack(
+                cmd.instance_name, cmd.token)
 
     def on_USER_IP(
         self, conn: IReplicationConnection, cmd: UserIpCommand
@@ -455,7 +462,7 @@ class ReplicationCommandHandler:
             return
 
         return self._handle_broadcast(cmd)
-    
+
     # Lama
     def on_ScheduledMessage(
         self, conn: IReplicationConnection, cmd: ScheduledMessageCommand
@@ -552,107 +559,42 @@ class ReplicationCommandHandler:
 
             retry_count = retry_count - 1
             await self._handle_broadcast(cmd, retry_count)
-            
+
     async def _handle_scheduled_message(self, cmd: ScheduledMessageCommand, is_message_sent=False) -> None:
+        logger.warning("Trying to send message.")
         if is_message_sent == True:
             return
 
         request_data = await self._store.get_scheduled_message_request(cmd.request_id)
-        message = request_data["message"]
-        room_id = request_data["room_id"]
-        timestamp = request_data["timestamp"]
-        timestamp = int(timestamp)
-        # Convert timestamp to datetime object
-        dt = datetime.fromtimestamp(timestamp)
-        logger.warning(f"timestamp= {timestamp} \t dt={dt}")
-        # Extract year, month, day, hour, and minute
-        year = dt.year
-        month = dt.month
-        day = dt.day
-        hour = dt.hour
-        minute = dt.minute
-        scheduled_datetime = datetime(year, month, day, hour, minute)
-        
-        # Get the current datetime
-        dt = datetime.fromtimestamp(self._clock.time_msec()/1000)
-        # Extract year, month, day, hour, and minute
-        year = dt.year
-        month = dt.month
-        day = dt.day
-        hour = dt.hour
-        minute = dt.minute
-        current_datetime = datetime(year, month, day, hour, minute)
-        
-        # Compare the scheduled datetime with the current datetime
-        if scheduled_datetime == current_datetime:
-            # TODO: send message
+        message, room_id, timestamp, sender = request_data["message"], request_data["room_id"], int(
+            request_data["timestamp"]), request_data["sender"]
+
+        scheduled_datetime = self._convert_timestamp_to_datetime(timestamp)
+        current_datetime = self._convert_timestamp_to_datetime(
+            self._clock.time_msec()/1000)
+
+        if scheduled_datetime <= current_datetime:
             logger.info("Sending scheduled message to room: ", room_id)
             event_dict: JsonDict = {
-            "type": "m.room.message",
-            "content": message,
-            "room_id": room_id,
-            "sender": "@admin:matrix.lab-lama.com"
+                "type": "m.room.message",
+                "content": {
+                    "msgtype": "m.text",
+                    "body": message
+                },
+                "room_id": room_id,
+                "sender": sender
             }
-            sender = create_requester(user_id="@admin:matrix.lab-lama.com")
+            sender = create_requester(user_id=sender)
             is_message_sent = await self.emit_message(sender, event_dict, cmd.request_id)
-        elif scheduled_datetime > current_datetime:
-            # Calculate the time difference in seconds
-            time_difference = (scheduled_datetime - current_datetime).total_seconds()
-
-            # Sleep for the remaining time
-            # time.sleep(time_difference)
-            is_message_sent = False
         else:
-            is_message_sent = True
-            logger.warning("The scheduled datetime has already passed.")
-            logger.warning(f" scheduled_datetime= {scheduled_datetime} \t current_datetime= {current_datetime}")
-        
-        # message_content = {
-        #     "msgtype": "m.text",
-        #     "body": request_data["message"]
-        # }
-        # event_dict: JsonDict = {
-        #     "type": "m.room.message",
-        #     "content": message_content,
-        #     "sender": request_data["broadcaster_id"]
-        # }
-        # sender = create_requester(user_id=request_data["broadcaster_id"],
-        #                           access_token_id=cmd.access_token_id)
+            logger.warning("Sleeping for 1 minute.")
+            time.sleep(60)
+        await self._handle_scheduled_message(cmd, is_message_sent)
 
-        # logger.debug(
-        #     "start broadcasting, page= %s, number of rooms= %s",
-        #     cmd.page,
-        #     len(room_ids)
-        # )
-
-        # all_succeeded = True
-        # for room_id in room_ids:
-
-        #     event_dict["room_id"] = room_id
-        #     is_succeeded = await self.emit_message(sender, event_dict, cmd.request_id)
-
-        #     if is_succeeded:
-        #         await self._store. \
-        #             delete_broadcast_request_message_delivery_for_room(cmd.request_id,
-        #                                                                room_id)
-        #     all_succeeded = all_succeeded and is_succeeded
-
-        # if not all_succeeded:
-        #     # retry logic
-
-        #     logger.debug(
-        #         "retry logic (%s): %s, %s, %s",
-        #         retry_count,
-        #         cmd.request_id,
-        #         cmd.page,
-        #         cmd.topic_ids
-        #     )
-
-        #     delay = 10  # sleep for 10 seconds
-        #     await asyncio.sleep(delay)
-
-        #     retry_count = retry_count - 1
-            await self._handle_scheduled_message(cmd, is_message_sent)
+    def _convert_timestamp_to_datetime(self, timestamp):
+        dt = datetime.fromtimestamp(timestamp)
+        return datetime(
+            dt.year, dt.month, dt.day, dt.hour, dt.minute)
 
     async def _handle_user_ip(self, cmd: UserIpCommand) -> None:
         """
@@ -759,7 +701,8 @@ class ReplicationCommandHandler:
             rows: a list of Stream.ROW_TYPE objects as returned by
                 Stream.parse_row.
         """
-        logger.debug("Received rdata %s (%s) -> %s", stream_name, instance_name, token)
+        logger.debug("Received rdata %s (%s) -> %s",
+                     stream_name, instance_name, token)
         await self._replication_data_handler.on_rdata(
             stream_name, instance_name, token, rows
         )
@@ -827,7 +770,8 @@ class ReplicationCommandHandler:
                     [stream.parse_row(row) for row in rows],
                 )
 
-            logger.info("Caught up with stream '%s' to %i", stream_name, cmd.new_token)
+            logger.info("Caught up with stream '%s' to %i",
+                        stream_name, cmd.new_token)
 
         # We've now caught up to position sent to us, notify handler.
         await self._replication_data_handler.on_position(
@@ -961,7 +905,8 @@ class ReplicationCommandHandler:
         last_seen: int,
     ) -> None:
         """Tell the master that the user made a request."""
-        cmd = UserIpCommand(user_id, access_token, ip, user_agent, device_id, last_seen)
+        cmd = UserIpCommand(user_id, access_token, ip,
+                            user_agent, device_id, last_seen)
         self.send_command(cmd)
 
     def send_remote_server_up(self, server: str) -> None:
@@ -972,7 +917,8 @@ class ReplicationCommandHandler:
 
         We need to check if the client is interested in the stream or not
         """
-        self.send_command(RdataCommand(stream_name, self._instance_name, token, data))
+        self.send_command(RdataCommand(
+            stream_name, self._instance_name, token, data))
 
     # TWK
     def send_broadcast(self, request_id: str, page: str, topic_ids: str,
@@ -980,8 +926,10 @@ class ReplicationCommandHandler:
         self.send_command(BroadcastCommand(request_id, page, topic_ids,
                                            access_token_id))
     # Lama
-    def send_scheduled_message(self, request_id: str, message: str, room_id: str, timestamp: str):
-        self.send_command(ScheduledMessageCommand(request_id, message, room_id, timestamp))
+
+    def send_scheduled_message(self, request_id: str):
+        # synapse/replication/tcp/commands.py
+        self.send_command(ScheduledMessageCommand(request_id))
 
 
 UpdateToken = TypeVar("UpdateToken")

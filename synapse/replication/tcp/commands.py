@@ -375,28 +375,27 @@ class BroadcastCommand(Command):
         return f"{prefix}/BROADCAST"
 
 # Lama
+
+
 class ScheduledMessageCommand(Command):
     NAME = "ScheduledMessage"
 
-    def __init__(self, request_id: str, message: str, room_id: str, timestamp: str):
+    def __init__(self, request_id: str):
         self.request_id = request_id
-        self.message = message
-        self.room_id = room_id
-        self.timestamp = timestamp
 
     @classmethod
     def from_line(
         cls: Type["ScheduledMessageCommand"], line: str
     ) -> "ScheduledMessageCommand":
-        request_id, message, room_id, timestamp = line.split(" ")
-        return cls(request_id, message, room_id, timestamp)
+        request_id = line
+        return cls(request_id)
 
     def to_line(self) -> str:
-        return "%s %s %s %s" % (self.request_id, self.message, self.room_id,
-                                self.timestamp)
+        return "%s" % (self.request_id)
 
     def redis_channel_name(self, prefix: str) -> str:
         return f"{prefix}/ScheduledMessage"
+
 
 class UserIpCommand(Command):
     """Sent periodically when a worker sees activity from a client.
@@ -428,7 +427,8 @@ class UserIpCommand(Command):
     def from_line(cls: Type["UserIpCommand"], line: str) -> "UserIpCommand":
         user_id, jsn = line.split(" ", 1)
 
-        access_token, ip, user_agent, device_id, last_seen = json_decoder.decode(jsn)
+        access_token, ip, user_agent, device_id, last_seen = json_decoder.decode(
+            jsn)
 
         return cls(user_id, access_token, ip, user_agent, device_id, last_seen)
 
@@ -437,14 +437,14 @@ class UserIpCommand(Command):
             self.user_id
             + " "
             + json_encoder.encode(
-            (
-                self.access_token,
-                self.ip,
-                self.user_agent,
-                self.device_id,
-                self.last_seen,
+                (
+                    self.access_token,
+                    self.ip,
+                    self.user_agent,
+                    self.device_id,
+                    self.last_seen,
+                )
             )
-        )
         )
 
     def __repr__(self) -> str:
@@ -500,7 +500,7 @@ VALID_SERVER_COMMANDS = (
     PingCommand.NAME,
     RemoteServerUpCommand.NAME,
     BroadcastCommand,  # TWK
-    ScheduledMessageCommand # Lama
+    ScheduledMessageCommand  # Lama
 )
 
 # The commands the client is allowed to send
@@ -515,7 +515,7 @@ VALID_CLIENT_COMMANDS = (
     ErrorCommand.NAME,
     RemoteServerUpCommand.NAME,
     BroadcastCommand,  # TWK
-    ScheduledMessageCommand # Lama
+    ScheduledMessageCommand  # Lama
 )
 
 

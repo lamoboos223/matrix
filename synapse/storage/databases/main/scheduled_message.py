@@ -13,8 +13,8 @@ class ScheduledMessageStore(SQLBaseStore):
         hs: "HomeServer",
     ):
         super().__init__(database, db_conn, hs)
-        
-    async def insert_scheduled_message_request(self, request_id, message, room_id, timestamp):
+
+    async def insert_scheduled_message_request(self, request_id, message, room_id, timestamp, sender):
         await self.db_pool.simple_insert(
             "scheduled_messages",
             {
@@ -22,10 +22,10 @@ class ScheduledMessageStore(SQLBaseStore):
                 "message": message,
                 "room_id": room_id,
                 "timestamp": timestamp,
+                "sender": sender
             },
             desc="insert_scheduled_message_request",
         )
-
 
     async def get_scheduled_message_request(self, request_id):
         return await self.db_pool.simple_select_one(
@@ -33,11 +33,9 @@ class ScheduledMessageStore(SQLBaseStore):
             {
                 "request_id": request_id
             },
-            ["message", "room_id", "timestamp"],
+            ["message", "room_id", "timestamp", "sender"],
             desc="get_scheduled_message_request"
         )
-
-
 
     async def delete_scheduled_message_request(self, request_id):
         await self.db_pool.simple_delete(
@@ -47,5 +45,3 @@ class ScheduledMessageStore(SQLBaseStore):
             },
             desc="delete_broadcast_request_message_delivery_for_room",
         )
-
-
