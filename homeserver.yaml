@@ -1,5 +1,6 @@
 server_name: "matrix.lab-lama.com"
 pid_file: /etc/matrix/homeserver.pid
+public_baseurl: "http://192.168.3.8:8008"
 listeners:
   - port: 8008
     tls: false
@@ -57,3 +58,20 @@ presence:
 typing:
   enabled: false
 suppress_key_server_warning: true
+
+
+oidc_providers:
+  - idp_id: keycloak
+    idp_name: "My KeyCloak server"
+    issuer: "http://192.168.3.17:8080/auth/realms/chat"
+    client_id: "synapse"
+    client_secret: "z4uwtH3fJDL9HXzIVOprl6uOjP9VnT3Z"
+    scopes: ["openid", "profile"]
+    # discover: true
+    # client_auth_method: "client_secret_basic"
+    skip_verification: true
+    user_mapping_provider:
+      config:
+        localpart_template: "{{ user.preferred_username }}"
+        display_name_template: "{{ user.name }}"
+    backchannel_logout_enabled: true # Optional
